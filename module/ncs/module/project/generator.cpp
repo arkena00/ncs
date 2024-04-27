@@ -113,7 +113,9 @@ namespace ncs::internal::modules::project
 
                 core_.log("Loading template from github: {}/{}", user, repo);
                 run("git clone " + branch + " https://github.com/" + user + "/" + repo + ".git");
+                // remove the git folder
                 source_origin_ = fs::path{ fs::current_path() / repo };
+                std::filesystem::remove_all(source_origin_ / ".git");
                 clean_source_ = true;
             }
             else
@@ -155,7 +157,7 @@ namespace ncs::internal::modules::project
                 if (is_meta) output_path = target_origin_ / fs::relative(source_entry.path().parent_path(), source_origin_) / evaluate_name(file_name);
                 else output_path = target_origin_ / entry_path;
 
-                std::ofstream ofs{ output_path };
+                std::ofstream ofs{ output_path, std::ios::binary };
                 if (ofs.is_open())
                 {
                     ofs.write(file_content.data(), file_content.size());
@@ -193,19 +195,19 @@ namespace ncs::internal::modules::project
         }
     }
 
-    std::string generator::process_file(const std::filesystem::path& source_origin_, const std::filesystem::path& file)
+    std::vector<char> generator::process_file(const std::filesystem::path& source_origin_, const std::filesystem::path& file)
     {
-        std::ifstream ifs{ file };
+        std::ifstream ifs{ file, std::ios::binary };
 
         if (!ifs.is_open()) core_.log("Error opening file {}", file.generic_string());
         else
         {
-            std::string file_content{ std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };
+            std::vector<char> file_content{ std::istreambuf_iterator<char>(ifs), {} };
 
             // process file containing $ncs.input
-            if (file_content.starts_with(meta_prefix_ + ".input"))
+            if (str_starts_with(file_content, meta_prefix_ + ".input"))
             {
-                file_content = get_input_data(file_content);
+                file_content = get_input_data(std::string { file_content.begin(), file_content.end() });
             }
 
             for (const auto& [parameter, value] : variables_)
@@ -235,11 +237,11 @@ namespace ncs::internal::modules::project
         return name;
     }
 
-    std::string generator::get_input_data(const std::string& input_path)
+    std::vector<char> generator::get_input_data(const std::string& input_path)
     {
         std::string input = input_path;
 
-        std::string file_content;
+        std::vector<char> file_content;
         fs::path reference_path;
         for (const auto& [name, parameter] : dynamic_inputs_)
         {
@@ -251,7 +253,7 @@ namespace ncs::internal::modules::project
                 if (!fs::exists(reference_path))
                 {
                     core_.log("Dynamic input file not found: {}", reference_path.generic_string());
-                    return "";
+                    return {};
                 }
                 break;
             }

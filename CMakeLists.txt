@@ -5,32 +5,18 @@
 # project
 cmake_minimum_required(VERSION 3.15.0)
 cmake_policy(SET CMP0091 NEW)
-project(ncs LANGUAGES CXX C)
+project(ncs LANGUAGES CXX)
 
 # target
 add_executable(ncs "")
 set_target_properties(ncs PROPERTIES OUTPUT_NAME "ncs")
+set_target_properties(ncs PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/windows/x64/debug")
 target_include_directories(ncs PRIVATE
     include
     module
     third_party/color-console/include
 )
-target_include_directories(ncs PRIVATE
-    C:/Users/ark/AppData/Local/.xmake/packages/n/nlohmann_json/v3.10.5/5210335fb96a43b89a0052ee798b9c75/include
+target_include_directories(ncs SYSTEM PRIVATE
+    C:/Users/ark/AppData/Local/.xmake/packages/t/tiny-process-library/v2.0.4/51ce6592099e45168bdd9098425db845/include
+    C:/Users/ark/AppData/Local/.xmake/packages/n/nlohmann_json/v3.11.2/d18ecf552d7148eeb73c26c13078fb10/include
 )
-target_compile_features(ncs PRIVATE cxx_std_23)
-if(MSVC)
-    target_compile_options(ncs PRIVATE $<$<CONFIG:Debug>:-Od>)
-else()
-    target_compile_options(ncs PRIVATE -O0)
-endif()
-if(MSVC)
-    set_property(TARGET ncs PROPERTY
-        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
-target_sources(ncs PRIVATE
-    source/main.cpp
-    source/ncs/core.cpp
-    module/ncs/module/project/generator.cpp
-)
-

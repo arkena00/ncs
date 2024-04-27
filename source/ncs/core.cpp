@@ -24,13 +24,19 @@ namespace ncs
 
     void core::process()
     {
+        bool module_found = false;
         for (const auto& module : modules_)
         {
             const auto& commands_view = module->commands().get();
             bool match = search(module->commands().get());
+            if (match) module_found = true;
+        }
 
-            if (!match)
+        if (!module_found)
+        {
+            for (const auto& module : modules_)
             {
+                const auto& commands_view = module->commands().get();
                 // execute the root command (ncs_module command)
                 if (!commands_view.empty() && commands_view[0]->name() == "ncs_module")
                 {
@@ -50,7 +56,7 @@ namespace ncs
     {
         for (const auto& command : commands)
         {
-            //std::cout << "\nCommand: " << command->str_path();
+            // std::cout << "\nCommand: " << command->str_path();
             int node_level = 0;
 
             for (const auto& element : input_parameters_)

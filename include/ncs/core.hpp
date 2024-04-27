@@ -35,7 +35,7 @@ namespace ncs
         template<typename... Args>
         void log(std::string_view message, Args&&... args) const
         {
-            std::cout << hue::blue << "[ncs] " << hue::reset << std::vformat(message, std::make_format_args(std::forward<Args>(args)...)) << std::endl;
+            std::cout << hue::light_blue << "[ncs] " << hue::reset << std::vformat(message, std::make_format_args(std::forward<Args>(args)...)) << std::endl;
         }
 
         template<typename... Args>

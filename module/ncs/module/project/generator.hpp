@@ -24,10 +24,10 @@ namespace ncs::internal::modules::project
         void process(const ncs::parameters& parameters);
 
     protected:
-        std::string get_input_data(const std::string&);
+        std::vector<char> get_input_data(const std::string&);
         void load_commands();
         void load_variables();
-        std::string process_file(const std::filesystem::path& source_origin, const std::filesystem::path& file);
+        std::vector<char> process_file(const std::filesystem::path& source_origin, const std::filesystem::path& file);
         std::string evaluate_name(const std::string&);
         void run(const std::string& command, const std::filesystem::path& execution_path = std::filesystem::current_path());
 

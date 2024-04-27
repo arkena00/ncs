@@ -2,6 +2,7 @@
 
 #include <ncs/core.hpp>
 #include <ncs/module/project/project.hpp>
+#include <ncs/module/uplugin/uplugin.hpp>
 
 struct compiler
 {
@@ -50,6 +51,7 @@ int main(int argc, const char* argv[])
 
     ncs::core core{ argc, argv };
     core.add_module<ncs::modules::project>();
+    core.add_module<ncs::modules::uplugin>();
     core.process();
 
     return 0;
